@@ -32,7 +32,10 @@ public class Medico {
     @Embedded
     private Direccion direccion;
 
+    private Boolean activo;
+
     public Medico(DatosRegistroMedico medico) {
+        this.activo = true;
         this.nombre = medico.nombre();
         this.email = medico.email();
         this.documento = medico.documento();
@@ -52,5 +55,9 @@ public class Medico {
             this.direccion = direccion.actualizarDatos(datosActualizarMedico.direccion());
         }
 
+    }
+
+    public void inactivar() {
+        this.activo = false;
     }
 }
