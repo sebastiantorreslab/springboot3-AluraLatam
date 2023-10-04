@@ -7,10 +7,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Repository
-public interface MedicoRespository extends JpaRepository<Medico, Long> {
+public interface MedicoRepository extends JpaRepository<Medico, Long> {
     Page<Medico> findByActivoTrue(Pageable paginacion);
 
     @Query("""
@@ -21,4 +20,9 @@ public interface MedicoRespository extends JpaRepository<Medico, Long> {
             limit 1
             """)
     Medico seleccionarMedicoConEspecialidadEnFecha(Especialidad especialidad, LocalDateTime fecha);
+
+    @Query("""
+    SELECT m.activo FROM Medico m WHERE m.id =: idMedico
+    """)
+    Boolean findActivoById(Long idMedico);
 }
