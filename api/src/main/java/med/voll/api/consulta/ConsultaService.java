@@ -1,6 +1,7 @@
 package med.voll.api.consulta;
 
 import med.voll.api.consulta.validaciones.ValidadorDeConsultas;
+import med.voll.api.exception.ValidacionDeIntegridad;
 import med.voll.api.medico.Medico;
 import med.voll.api.medico.MedicoRepository;
 import med.voll.api.paciente.PacienteRepository;
@@ -24,14 +25,14 @@ public class ConsultaService {
         this.validadores = validadores;
     }
 
-    public void agendar(DatosAgendarConsulta datos){
+    public DatosDetalleConsulta agendar(DatosAgendarConsulta datos){
 
         if(!pacienteRepository.findById(datos.idPaciente()).isPresent()){
-            throw new ValidacionDerIntegridad("este id de paciente no fué encontrado");
+            throw new ValidacionDeIntegridad("este id de paciente no fué encontrado");
         }
 
         if(datos.idMedico() != null && !medicoRepository.existsById(datos.idMedico())){
-            throw new ValidacionDerIntegridad("este id de médico no fué encontrado");
+            throw new ValidacionDeIntegridad("este id de médico no fué encontrado");
         }
 
         //validaciones implementando un desing patter
@@ -42,6 +43,8 @@ public class ConsultaService {
         var medico = seleccionarMedico(datos);
         var consulta = new Consulta(null,medico, paciente, datos.fecha());
             consultaRepository.save( consulta);
+
+            return new DatosDetalleConsulta(consulta);
     }
 
     private Medico seleccionarMedico(DatosAgendarConsulta datos) {
@@ -49,7 +52,7 @@ public class ConsultaService {
             return medicoRepository.getReferenceById(datos.idMedico());
         }
         if(datos.especialidad() == null){
-            throw new ValidacionDerIntegridad("debe seleccionarse una especialidad para el médico");
+            throw new ValidacionDeIntegridad("debe seleccionarse una especialidad para el médico");
         }
         return medicoRepository.seleccionarMedicoConEspecialidadEnFecha( datos.especialidad(),datos.fecha());
     }
