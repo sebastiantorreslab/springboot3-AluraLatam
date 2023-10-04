@@ -6,6 +6,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UsuariosRepository extends JpaRepository<Usuario,Long> {
+public interface UsuariosRepository extends JpaRepository<Usuario,Long>{
     UserDetails findByLogin(String login);
 }

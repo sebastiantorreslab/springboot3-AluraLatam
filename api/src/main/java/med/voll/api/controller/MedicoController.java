@@ -50,7 +50,7 @@ public class MedicoController {
 
     @GetMapping("/{id}")
     @Secured("ROLE_ADMIN")
-    public ResponseEntity detallar(@PathVariable Long id) {
+    public ResponseEntity<?> detallar(@PathVariable Long id) {
         var medico = medicoRespository.getReferenceById(id);
         return ResponseEntity.ok(new DatosDetalladoMedico(medico));
     }
