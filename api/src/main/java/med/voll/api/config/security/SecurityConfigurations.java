@@ -29,15 +29,16 @@ public class SecurityConfigurations {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.csrf().disable()
+        return http.cors().and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and().authorizeRequests()
-                .requestMatchers(HttpMethod.POST, "/login").permitAll()
-                .requestMatchers(HttpMethod.DELETE, "/medicos").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/pacientes").hasRole("ADMIN")
-                .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
-                .anyRequest().authenticated()
-                .and().addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
+                .and().authorizeHttpRequests(auth ->{
+                    auth.requestMatchers(HttpMethod.POST, "/login").permitAll();
+                    auth.requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
+                    .anyRequest().authenticated()
+                    .and().addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
+                })
+                .formLogin().permitAll()
+                .and()
                 .build();
     }
 
