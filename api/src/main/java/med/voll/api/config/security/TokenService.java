@@ -16,13 +16,10 @@ import java.time.ZoneOffset;
 @Service
 public class TokenService {
 
-    @Value("${api.config.security.secret}")
-    private String apiSecret;
-
     public String generarToken(Usuario usuario) {
 
         try {
-            Algorithm algorithm = Algorithm.HMAC256(apiSecret);
+            Algorithm algorithm = Algorithm.HMAC256("123456");
             return JWT.create()
                     .withIssuer("voll")
                     .withSubject(usuario.getLogin())
@@ -48,7 +45,7 @@ public class TokenService {
         }
         DecodedJWT verifier = null;
         try {
-            Algorithm algorithm = Algorithm.HMAC256(apiSecret);
+            Algorithm algorithm = Algorithm.HMAC256("123456");
             verifier = JWT.require(algorithm)
                     .withIssuer("voll")
                     .build()
