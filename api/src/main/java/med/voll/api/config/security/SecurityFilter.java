@@ -29,10 +29,10 @@ public class SecurityFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         //obtener el token del header
-        var token = request.getHeader("Authorization").replace("Bearer",""); // el prefijo por defecto es Bearer
+        var token = request.getHeader("Authorization");
        // hay que hacer un handling al posible error que llege en esta petición
         if(token != null){
-            token = token.replace("Bearer","");
+            token = token.replace("Bearer ","");
             String subject = tokenService.getSubject(token);
             if(subject != null){
                UserDetails usuario = usuariosRepository.findByLogin(subject);

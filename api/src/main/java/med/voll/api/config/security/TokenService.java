@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import med.voll.api.dominio.usuarios.Usuario;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,7 +25,10 @@ public class TokenService {
         try {
             Algorithm algorithm = Algorithm.HMAC256(apiSecret);
             return JWT.create()
-                    .withIssuer("voll med").withSubject(usuario.getLogin()).withClaim("id", usuario.getId()).withExpiresAt(generarFechaExp())
+                    .withIssuer("voll")
+                    .withSubject(usuario.getLogin())
+                    .withClaim("id", usuario.getId())
+                    .withExpiresAt(generarFechaExp())
                     .sign(algorithm);
         } catch (JWTCreationException exception) {
             throw new RuntimeException();
@@ -39,31 +43,30 @@ public class TokenService {
 
 
     public String getSubject(String token) {
-        DecodedJWT verifier = null;
-
         if(token == null ){
             throw new RuntimeException("token no valido");
         }
-
+        DecodedJWT verifier = null;
         try {
             Algorithm algorithm = Algorithm.HMAC256(apiSecret);
             verifier = JWT.require(algorithm)
                     // specify an specific claim validations
-                    .withIssuer("voll-med")
+                    .withIssuer("voll")
                     // reusable verifier instance
-                    .build().verify(token);
+                    .build()
+                    .verify(token);
 
-            verifier.getSubject();
+            if(verifier == null){
+                throw new RuntimeException("invalid verifier");
+            }
+
+            return verifier.getSubject();
 
         } catch (JWTVerificationException exception) {
-            // Invalid signature/claims
+            throw new RuntimeException("Error verificando el JWT: " + exception.getMessage());
 
         }
-        if (verifier.getSubject() == null) {
-            throw new RuntimeException("verifier invalido");
-        }
 
-        return verifier.getSubject();
 
     }
 
